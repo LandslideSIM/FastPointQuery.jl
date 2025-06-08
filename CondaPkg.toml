@@ -1,0 +1,8 @@
+channels = ["conda-forge", "anaconda"]
+
+[deps]
+python = ">=3.12,<3.13"
+numpy = ">=2.2"
+shapely = ">=2.1"
+open3d = ">=0.19"
+trimesh = ">=4.6"
