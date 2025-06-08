@@ -12,7 +12,7 @@ Just type <kbd>]</kbd> in Julia's  `REPL`:
 
 ```julia
 julia> ]
-(@1.11) Pkg> add FastPIP
+(@1.11) Pkg> add FastPointQuery
 ```
 
 ## Features ✨ 
