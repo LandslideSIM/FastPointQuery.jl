@@ -1,6 +1,6 @@
 module FastPointQuery
 
-using CondaPkg, Printf, PythonCall
+using CondaPkg, PythonCall
 
 const np      = PythonCall.pynew()
 const shapely = PythonCall.pynew()
@@ -19,13 +19,41 @@ function __init__()
     end
 end
 
-include(joinpath(@__DIR__, "STLInfo.jl"))
+struct STLInfo2D
+    mesh        ::Py
+    vmin        ::Vector
+    vmax        ::Vector
+    py_vertices ::Py
+    py_triangles::Py
+end
+
+struct STLInfo3D
+    mesh        ::Py
+    vmin        ::Vector
+    vmax        ::Vector
+    py_vertices ::Py
+    py_triangles::Py
+end
+
+struct QueryPolygon
+    ju_xy::AbstractMatrix
+    py_xy::Py
+    function QueryPolygon(ju_xy::AbstractMatrix, py_xy::Py)
+        n, m = size(ju_xy)
+        m >= 3 || error("at least 3 points are required")
+        n == 2 || error("points must be 2D (2×N array)")
+        new(ju_xy, py_xy)
+    end
+end
+
+include(joinpath(@__DIR__, "utils.jl"))
 include(joinpath(@__DIR__, "polygon.jl"))
+include(joinpath(@__DIR__, "polyhedron.jl"))
 
 
 # export structs
-export QueryPolygon, STLInfo
+export QueryPolygon, STLInfo2D, STLInfo3D
 # export functions
-export get_polygon, pip_query, loadmesh
+export get_polygon, pip_query, readSTL2D, readSTL3D
 
 end
