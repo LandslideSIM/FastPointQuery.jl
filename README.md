@@ -3,7 +3,6 @@
 [![CI](https://github.com/LandslideSIM/FastPIP.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/LandslideSIM/FastPointQuery.jl/actions/workflows/ci.yml) 
 [![Version](https://img.shields.io/badge/version-v0.1.0-pink)]()
 
-
 > This is a dependency package for [MaterialPointGenerator.jl](https://github.com/LandslideSIM/MaterialPointGenerator.jl), used to separate Python calls for easier management.
 
 ## Installation ⚙️
@@ -15,11 +14,19 @@ julia> ]
 (@1.11) Pkg> add FastPointQuery
 ```
 
+Documentation:
+
+``julia
+help?>pip_query
+help?>get_polygon
+help?>readSTL2D
+help?>readSTL3D
+```
+
 ## Features ✨ 
 
-- [x] point-in-polygon
-- [x] point-in-polyhedron
-- [x] surface normal vectors
+- [x] point(s)-in-polygon
+- [x] point(s)-in-polyhedron
 
 ## Acknowledgement 👍
 
