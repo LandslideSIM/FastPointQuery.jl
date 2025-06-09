@@ -1,27 +1,12 @@
-#==========================================================================================++
+#==========================================================================================+
 | TABLE OF CONTENTS:                                                                       |
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-| struct list:                                                                             |
-|  - QueryPolygon                                                                          |
-+------------------------------------------------------------------------------------------+
-| function list:                                                                           |
-|  - get_polygon (from LibGEOS, need to improve)                                           |
+|  - get_polygon                                                                           |
 |  - pip_query                                                                             |
 +==========================================================================================#
 
-struct QueryPolygon
-    ju_xy::AbstractMatrix
-    py_xy::Py
-    function QueryPolygon(ju_xy::AbstractMatrix, py_xy::Py)
-        n, m = size(ju_xy)
-        m >= 3 || error("at least 3 points are required")
-        n == 2 || error("points must be 2D (2×N array)")
-        new(ju_xy, py_xy)
-    end
-end
-
 """
-    get_polygon(points::AbstractArray; ratio::Bool=0.1)
+    get_polygon(points::AbstractMatrix; ratio::Bool=0.1)
 
 Description:
 ---
@@ -35,7 +20,7 @@ polygon_xy = [0 0; 1 0; 1 1; 0 1]' # 2xN array
 polygon = get_polygon(polygon_xy, ratio=1) # polygon.py_xy to visualize
 ```
 """
-function get_polygon(points::AbstractArray; ratio::Real=0.1)
+function get_polygon(points::AbstractMatrix; ratio::Real=0.1)
     # inputs checking
     n, m = size(points)
     n == 2 || error("points must be a 2xN array")
@@ -115,117 +100,49 @@ function pip_query(
 end
 
 """
-    pip_query(stl_file::String, points::AbstractMatrix; edge::Bool=false)
-
-Description:
----
-Determine whether a set of points is inside a 3D mesh defined by an STL file. The input
-`stl_file` should be a valid file path to an STL file, and `points` should be a 2xN array
-where each column represents a point (x, y). If `edge` is set to true, it checks if the 
-points are on the edge of the mesh as well.
-
-Example:
----
-```julia
-stl_file = "path/to/your/file.stl"
-points = [0 0; 0.5 0.5; 1 1]'
-pip_query(stl_file, points, edge=true)
-```
-"""
-function pip_query(
-    stl_file::String, 
-    points  ::AbstractMatrix;
-    edge    ::Bool=false
-)
-    isfile(stl_file) || error("stl_file must be a valid file path")
-    size(points, 1) == 2 || error("points must be a 2xN array")
-    py_points = shapely.points(points')
-    if edge
-        @pyexec """
-        def py_pip(stl_file, py_points, trimesh, shapely):
-            mesh = trimesh.load(stl_file, force="mesh")
-            tris2d = mesh.triangles[:, :, :2]
-            region = shapely.unary_union([shapely.Polygon(t) for t in tris2d])
-            mask = shapely.covers(region, py_points)
-            return mask
-        """ => py_pip
-    else
-        @pyexec """
-        def py_pip(stl_file, py_points, trimesh, shapely):
-            mesh = trimesh.load(stl_file, force="mesh")
-            tris2d = mesh.triangles[:, :, :2]
-            region = shapely.unary_union([shapely.Polygon(t) for t in tris2d])
-            mask = shapely.within(py_points, region)
-            return mask
-        """ => py_pip
-    end
-    tmp = py_pip(stl_file, py_points, trimesh, shapely)
-    return pyconvert(Vector{Bool}, tmp)
-end
-
-"""
-    pip_query(mesh::Py, points::AbstractMatrix; edge::Bool=false)
-
-Description:
----
-Determine whether a set of points is inside a 3D mesh defined by a Python object. The input 
-`mesh` should be a Python object representing the mesh (`trimesh`), and `points` should be 
-a 2xN array where each column represents a point (x, y). If `edge` is set to true, it checks 
-if the points are on the edge of the mesh as well.
-
-Example:
----
-```julia
-mesh = trimesh.load("path/to/your/file.stl", force="mesh")
-points = [0 0; 0.5 0.5; 1 1]'
-pip_query(mesh, points, edge=true)
-```
-"""
-function pip_query(
-    mesh    ::Py,
-    points  ::AbstractMatrix;
-    edge    ::Bool=false
-)
-    size(points, 1) == 2 || error("points must be a 2xN array")
-    py_points = shapely.points(points')
-    if edge
-        @pyexec """
-        def py_pip(mesh, py_points, trimesh, shapely):
-            tris2d = mesh.triangles[:, :, :2]
-            region = shapely.unary_union([shapely.Polygon(t) for t in tris2d])
-            mask = shapely.covers(region, py_points)
-            return mask
-        """ => py_pip
-    else
-        @pyexec """
-        def py_pip(mesh, py_points, trimesh, shapely):
-            tris2d = mesh.triangles[:, :, :2]
-            region = shapely.unary_union([shapely.Polygon(t) for t in tris2d])
-            mask = shapely.within(py_points, region)
-            return mask
-        """ => py_pip
-    end
-    tmp = py_pip(mesh, py_points, trimesh, shapely)
-    return pyconvert(Vector{Bool}, tmp)
-end
-
-"""
-    pip_query(stl_model::STLInfo, points::AbstractMatrix; edge::Bool=false)
+    pip_query(stl_model::STLInfo2D, points::AbstractMatrix; edge::Bool=false)
 
 Description:
 ---
 Determine whether a set of points is inside a 3D mesh defined by a 'STLInfo'. The input 
-`stl_model` should be initiated by function `loadmesh(stl_file)`, and `points` should be 
+`stl_model` should be initiated by function `readSTL2D(stl_file)`, and `points` should be 
 a 2xN array where each column represents a point (x, y). If `edge` is set to true, it checks 
 if the points are on the edge of the mesh as well.
 
 Example:
 ---
 ```julia
-stl_model = loadmesh("path/to/your/file.stl")
+stl_model = readSTL2D("path/to/your/file.stl")
 points = [0 0; 0.5 0.5; 1 1]'
 pip_query(stl_model, points, edge=true)
 ```
 """
-pip_query(stl_model::STLInfo, points::AbstractMatrix; edge::Bool=false) = pip_query(
-    stl_model.mesh, points; edge=edge)
+function pip_query(
+    stl_model::STLInfo2D,
+    points   ::AbstractMatrix;
+    edge     ::Bool=false
+)
+    size(points, 1) == 2 || error("points must be a 2xN array")
+    py_points = shapely.points(points')
+    if edge
+        @pyexec """
+        def py_pip(vertices, triangles, py_points, shapely):
+            triangle_coords_2d = vertices[triangles][:, :, :2]
+            tris2d = shapely.polygons(triangle_coords_2d)
+            region = shapely.unary_union(tris2d)
+            mask = shapely.covers(region, py_points)
+            return mask
+        """ => py_pip
+    else
+        @pyexec """
+        def py_pip(vertices, triangles, py_points, shapely):
+            triangle_coords_2d = vertices[triangles][:, :, :2]
+            tris2d = shapely.polygons(triangle_coords_2d)
+            region = shapely.unary_union(tris2d)
+            mask = shapely.within(py_points, region)
+            return mask
+        """ => py_pip
+    end
+    tmp = py_pip(stl_model.py_vertices, stl_model.py_triangles, py_points, shapely)
+    return pyconvert(Vector{Bool}, tmp)
+end
