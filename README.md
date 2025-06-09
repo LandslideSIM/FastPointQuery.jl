@@ -3,7 +3,7 @@
 [![CI](https://github.com/LandslideSIM/FastPointQuery.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/LandslideSIM/FastPointQuery.jl/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-v0.1.0-pink)]()
 
-> This is a dependency package for [MaterialPointGenerator.jl](https://github.com/LandslideSIM/MaterialPointGenerator.jl), used to separate Python calls for easier management.
+> This is a dependency package for [MaterialPointGenerator.jl](https://github.com/LandslideSIM/MaterialPointGenerator.jl), for easier Python ENV management.
 
 ## Installation ⚙️
 
@@ -16,7 +16,7 @@ julia> ]
 
 Documentation:
 
-``julia
+```julia
 help?>pip_query
 help?>get_polygon
 help?>readSTL2D
