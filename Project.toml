@@ -5,13 +5,11 @@ version = "0.1.0"
 
 [deps]
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
-LibGEOS = "a90b1aa1-3769-5649-ba7e-abc5a9d163eb"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 
 [compat]
 CondaPkg = "0.2"
-LibGEOS = "0.9"
 PythonCall = "0.9"
 julia = "1.11"
 

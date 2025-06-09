@@ -1,6 +1,6 @@
 module FastPointQuery
 
-using CondaPkg, LibGEOS, Printf, PythonCall
+using CondaPkg, Printf, PythonCall
 
 const np      = PythonCall.pynew()
 const shapely = PythonCall.pynew()
@@ -19,11 +19,13 @@ function __init__()
     end
 end
 
+include(joinpath(@__DIR__, "STLInfo.jl"))
 include(joinpath(@__DIR__, "polygon.jl"))
 
+
 # export structs
-export QueryPolygon
+export QueryPolygon, STLInfo
 # export functions
-export get_polygon, pip_query
+export get_polygon, pip_query, loadmesh
 
 end
