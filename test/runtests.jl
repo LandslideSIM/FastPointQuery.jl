@@ -1,4 +1,5 @@
 using FastPointQuery
+using CondaPkg
 using PythonCall
 using Test
 
