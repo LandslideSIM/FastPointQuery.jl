@@ -27,7 +27,7 @@ function readSTL2D(stl_file)
     aabb = mesh.get_axis_aligned_bounding_box()
     vmin = pyconvert(Vector, aabb.get_min_bound())
     vmax = pyconvert(Vector, aabb.get_max_bound())
-    return STLInfo2D(mesh, vmin, vmax, vertices, triangles) 
+    return STLInfo2D(mesh, vmin, vmax, vertices, triangles, stl_file) 
 end
 
 """
@@ -51,5 +51,5 @@ function readSTL3D(stl_file)
     aabb = mesh.get_axis_aligned_bounding_box()
     vmin = pyconvert(Vector, aabb.get_min_bound())
     vmax = pyconvert(Vector, aabb.get_max_bound())
-    return STLInfo3D(mesh, vmin, vmax, vertices, triangles) 
+    return STLInfo3D(mesh, vmin, vmax, vertices, triangles, stl_file) 
 end
