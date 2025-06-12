@@ -8,7 +8,7 @@ const o3d      = PythonCall.pynew()
 const trimesh  = PythonCall.pynew()
 const rasterio = PythonCall.pynew()
 
-const py2ju = PythonCall.pycosnvert
+const py2ju = PythonCall.pyconvert
 const pyfun = PythonCall.pybuiltins
 
 function __init__()
