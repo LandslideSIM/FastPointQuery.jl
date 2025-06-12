@@ -1,37 +1,8 @@
 #==========================================================================================+
 | TABLE OF CONTENTS:                                                                       |
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-|  - get_polygon                                                                           |
 |  - pip_query                                                                             |
 +==========================================================================================#
-
-"""
-    get_polygon(points::AbstractMatrix; ratio::Bool=0.1)
-
-Description:
----
-Get the polygon from the given points. `points` is a 2xN array, and `ratio` is the
-parameter for the concave hull. The default value is 0.1.
-
-Example:
----
-```julia
-polygon_xy = [0 0; 1 0; 1 1; 0 1]' # 2xN array
-polygon = get_polygon(polygon_xy, ratio=1) # polygon.py_xy to visualize
-```
-"""
-function get_polygon(points::AbstractMatrix; ratio::Real=0.1)
-    # inputs checking
-    n, m = size(points)
-    n == 2 || error("points must be a 2xN array")
-    m >= 3 || error("at least 3 points are required")
-    ratio > 0 || error("ratio must be positive")
-    # use shapely to get the polygon
-    py_points = shapely.MultiPoint(np.array(points'))
-    poly = shapely.concave_hull(py_points, ratio=ratio, allow_holes=false)
-    xy = pyconvert(Array, np.array(poly.exterior.xy)) # get the exterior points of the polygon
-    return QueryPolygon(xy, poly)
-end
 
 """
     pip_query(polygon::QueryPolygon, px::Real, py::Real; edge::Bool=false)
@@ -46,9 +17,9 @@ Example:
 ---
 ```julia
 polypon_xy = [0 0; 1 0; 1 1; 0 1]' # 2xN array
-polygon = get_polygon(polygon_xy, ratio=1) # polygon.py_xy to visualize
-pip_query(polygon, 0, 0) # check points (0, 0) and return false
-pip_query(polygon, 0, 0, edge=true) # check points (0, 0) and return true
+poly = get_polygon(polygon_xy, ratio=1) # poly.polygon to visualize
+pip_query(poly, 0, 0) # check points (0, 0) and return false
+pip_query(poly, 0, 0, edge=true) # check points (0, 0) and return true
 ```
 """
 function pip_query(
@@ -74,7 +45,7 @@ Example:
 ---
 ```julia
 polygon_xy = [0 0; 1 0; 1 1; 0 1]' # 2xN array
-polygon = get_polygon(polygon_xy, ratio=1) # polygon.py_xy to visualize
+poly = get_polygon(polygon_xy, ratio=1) # poly.polygon to visualize
 pip_query(polygon, [0 0; 0.5 0.5; 1 1], edge=true) # returns [true, true, true]
 ```
 """
@@ -91,9 +62,9 @@ function pip_query(
     
     # check if the particle is inside the polygon
     if edge
-        mask = shapely.covers(polygon.py_xy, py_points)
+        mask = shapely.covers(polygon.polygon, py_points)
     else
-        mask = shapely.within(py_points, polygon.py_xy)
+        mask = shapely.within(py_points, polygon.polygon)
     end
 
     return pyconvert(Vector{Bool}, mask)
