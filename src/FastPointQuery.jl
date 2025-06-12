@@ -2,21 +2,23 @@ module FastPointQuery
 
 using CondaPkg, PythonCall
 
-const np      = PythonCall.pynew()
-const shapely = PythonCall.pynew()
-const o3d     = PythonCall.pynew()
-const trimesh = PythonCall.pynew()
+const np       = PythonCall.pynew()
+const shapely  = PythonCall.pynew()
+const o3d      = PythonCall.pynew()
+const trimesh  = PythonCall.pynew()
+const rasterio = PythonCall.pynew()
 
-const py2ju = PythonCall.pyconvert
+const py2ju = PythonCall.pycosnvert
 const pyfun = PythonCall.pybuiltins
 
 function __init__()
     @info "initializing environment..."
     try # import Python modules
-        PythonCall.pycopy!(np     , PythonCall.pyimport("numpy"  ))
-        PythonCall.pycopy!(shapely, PythonCall.pyimport("shapely"))
-        PythonCall.pycopy!(o3d    , PythonCall.pyimport("open3d" ))
-        PythonCall.pycopy!(trimesh, PythonCall.pyimport("trimesh"))
+        PythonCall.pycopy!(np      , PythonCall.pyimport("numpy"   ))
+        PythonCall.pycopy!(shapely , PythonCall.pyimport("shapely" ))
+        PythonCall.pycopy!(o3d     , PythonCall.pyimport("open3d"  ))
+        PythonCall.pycopy!(trimesh , PythonCall.pyimport("trimesh" ))
+        PythonCall.pycopy!(rasterio, PythonCall.pyimport("rasterio"))
     catch e
         @error "Failed to initialize Python ENV" exception=e
     end
