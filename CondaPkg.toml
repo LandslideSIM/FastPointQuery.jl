@@ -1,11 +1,12 @@
 channels = ["conda-forge", "anaconda"]
 
 [deps]
-numpy = ""
+numpy = ">=2.2"
 shapely = ">=2.1"
 open3d = ">=0.19"
-trimesh = ""
-rtree = ""
-scipy = ""
-rasterio = ""
-gdal = ""
+trimesh = ">=4.6"
+rtree = ">=1.4"
+scipy = ">=1.15"
+
+[pip.deps]
+rasterio = "==1.4.1"
