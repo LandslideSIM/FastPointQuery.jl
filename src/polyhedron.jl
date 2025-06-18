@@ -30,6 +30,6 @@ function pip_query(
     pts_t = o3d.core.Tensor(py_points.astype(np.float32), device=_dev)
     occ = scene.compute_occupancy(pts_t, nsamples=nsamples)
     tmp = occ.numpy().astype(pybuiltins.bool)
-
-    return pyconvert(Vector{Bool}, tmp)
+    
+    return PyArray(tmp, copy=false)
 end
