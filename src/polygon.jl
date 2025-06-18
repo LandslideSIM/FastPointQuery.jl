@@ -4,6 +4,10 @@
 |  - pip_query                                                                             |
 +==========================================================================================#
 
+include(joinpath(@__DIR__, "discretization/_polygon.jl"))
+
+export pip_query
+
 """
     pip_query(polygon::QueryPolygon, px::Real, py::Real; edge::Bool=false)
 
