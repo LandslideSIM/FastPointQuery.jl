@@ -36,14 +36,14 @@ function __init__()
     end
 end
 
-include(joinpath(@__DIR__, "fileio/asc2ply.jl"))
+include(joinpath(@__DIR__, "fileio/asc.jl"    ))
 include(joinpath(@__DIR__, "fileio/geojson.jl"))
-include(joinpath(@__DIR__, "fileio/ply.jl"))
-include(joinpath(@__DIR__, "fileio/stl.jl"))
-include(joinpath(@__DIR__, "fileio/tiff2ply.jl"))
+include(joinpath(@__DIR__, "fileio/ply.jl"    ))
+include(joinpath(@__DIR__, "fileio/stl.jl"    ))
+include(joinpath(@__DIR__, "fileio/tiff.jl"   ))
 
-include(joinpath(@__DIR__, "utils.jl"))
-include(joinpath(@__DIR__, "polygon.jl"))
+include(joinpath(@__DIR__, "utils.jl"     ))
+include(joinpath(@__DIR__, "polygon.jl"   ))
 include(joinpath(@__DIR__, "polyhedron.jl"))
 
 export get_resource, res_dir
