@@ -47,7 +47,7 @@ function saveply(points::AbstractArray, filename::String)
     return nothing
 end
 
-saveply(filename::String, points::AbstractArray) = savexyz(points, filename)
+saveply(filename::String, points::AbstractArray) = saveply(points, filename)
 
 """
     readply(filename::String; xy::Bool=false)
