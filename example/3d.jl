@@ -10,3 +10,21 @@ stl_model2 = readSTL3D(stl_path2)
 
 pip_query(stl_model1, points; nsamples=3, dev="CPU:0")
 pip_query(stl_model2, points; nsamples=5)
+
+let
+    h = 1
+    pts = FastPointQuery._get_pts_voxel(stl_model1, h)
+    fig = Figure()
+    ax = LScene(fig[1, 1])
+    scatter!(ax, pts, markersize=1)
+    display(fig)
+end
+
+let
+    h = 5
+    pts = FastPointQuery._get_pts_voxel(stl_model2, h; fill=true)
+    fig = Figure()
+    ax = LScene(fig[1, 1])
+    scatter!(ax, pts, markersize=1)
+    display(fig)
+end
