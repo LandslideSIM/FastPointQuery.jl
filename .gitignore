@@ -30,3 +30,5 @@ Manifest.toml
 *.stl
 *.geojson
 *.ply
+*.tiff
+*.asc
