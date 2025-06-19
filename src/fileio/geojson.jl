@@ -73,6 +73,8 @@ function write_polygon(polygon::QueryPolygon, file_path::String)
     """
 end
 
+write_polygon(file_path::String, polygon::QueryPolygon) = write_polygon(polygon, file_path)
+
 """
     read_polygon(file_path::String)
 
