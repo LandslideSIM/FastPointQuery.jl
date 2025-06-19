@@ -33,7 +33,7 @@ function pip_query(
     edge   ::Bool=false
 )
     func = edge ? shapely.intersects_xy : shapely.contains_xy
-    return py2ju(Bool, func(polygon.py_xy, px, py).item())
+    return py2ju(Bool, func(polygon.polygon, px, py).item())
 end
 
 """
