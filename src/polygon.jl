@@ -33,7 +33,7 @@ function pip_query(
     edge   ::Bool=false
 )
     func = edge ? shapely.intersects_xy : shapely.contains_xy
-    return pyconvert(Bool, func(polygon.py_xy, px, py).item())
+    return py2ju(Bool, func(polygon.py_xy, px, py).item())
 end
 
 """
@@ -65,13 +65,14 @@ function pip_query(
     py_points = shapely.points(points')
     
     # check if the particle is inside the polygon
+    println("\e[1;36m[start]:\e[0m querying points inside the polygon")
     if edge
         mask = shapely.covers(polygon.polygon, py_points)
     else
         mask = shapely.within(py_points, polygon.polygon)
     end
 
-    return pyconvert(Vector{Bool}, mask)
+    return PyArray(mask)
 end
 
 """
@@ -99,25 +100,17 @@ function pip_query(
 )
     size(points, 1) == 2 || error("points must be a 2xN array")
     py_points = shapely.points(points')
+    triangle_coords_2d = stl_model.py_vertices[stl_model.py_triangles]
+    tris2d = shapely.polygons(triangle_coords_2d)
+    region = shapely.unary_union(tris2d)
+
+    # check if the particle is inside the polygon
+    println("\e[1;36m[start]:\e[0m querying points inside the STL model")
     if edge
-        @pyexec """
-        def py_pip(vertices, triangles, py_points, shapely):
-            triangle_coords_2d = vertices[triangles][:, :, :2]
-            tris2d = shapely.polygons(triangle_coords_2d)
-            region = shapely.unary_union(tris2d)
-            mask = shapely.covers(region, py_points)
-            return mask
-        """ => py_pip
+        mask = shapely.covers(region, py_points)
     else
-        @pyexec """
-        def py_pip(vertices, triangles, py_points, shapely):
-            triangle_coords_2d = vertices[triangles][:, :, :2]
-            tris2d = shapely.polygons(triangle_coords_2d)
-            region = shapely.unary_union(tris2d)
-            mask = shapely.within(py_points, region)
-            return mask
-        """ => py_pip
+        mask = shapely.within(py_points, region)
     end
-    tmp = py_pip(stl_model.py_vertices, stl_model.py_triangles, py_points, shapely)
-    return pyconvert(Vector{Bool}, tmp)
+
+    return PyArray(mask)
 end

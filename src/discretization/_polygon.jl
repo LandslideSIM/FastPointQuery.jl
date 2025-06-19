@@ -1,3 +1,9 @@
+#==========================================================================================+
+| TABLE OF CONTENTS:                                                                       |
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|  - get_pts                                                                               |
++==========================================================================================#
+
 export get_pts
 
 """
@@ -66,15 +72,9 @@ pts = get_pts(stl_data, 0.1; fill=true) # returns points in a filled grid patter
 """
 function get_pts(stl_data::STLInfo2D, h::Real; fill::Bool=true)
     h > 0 || error("h must be positive")
-    vertices = stl_data.py_vertices
-    triangles = stl_data.py_triangles
-    @pyexec """
-    def py_tmp(vertices, triangles, shapely):
-        tris = vertices[triangles]
-        tris_2d = tris[:, :, :2]
-        polygons = [shapely.Polygon(pts) for pts in tris_2d]
-        return shapely.unary_union(polygons)
-    """ => py_tmp
-    polygon = QueryPolygon(py_tmp(vertices, triangles, shapely))
+    triangle_coords_2d = stl_data.py_vertices[stl_data.py_triangles]
+    tris2d = shapely.polygons(triangle_coords_2d)
+    region = shapely.unary_union(tris2d)
+    polygon = QueryPolygon(region)
     return get_pts(polygon, h; fill=fill)
 end

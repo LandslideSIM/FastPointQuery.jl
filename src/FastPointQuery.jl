@@ -33,43 +33,8 @@ function __init__()
     end
 end
 
-struct STLInfo2D
-    mesh        ::Py
-    vmin        ::Vector
-    vmax        ::Vector
-    py_vertices ::Py
-    py_triangles::Py
-    stl_path    ::String
-end
-
-struct STLInfo3D
-    mesh        ::Py
-    vmin        ::Vector
-    vmax        ::Vector
-    py_vertices ::Py
-    py_triangles::Py
-    stl_path    ::String
-end
-
-struct QueryPolygon
-    polygon::Py
-    coord  ::AbstractVector
-end
-
-function QueryPolygon(pypoly::Py)
-    @pyexec """
-    def py_tmp(poly, np):
-        rings = []
-        exterior = np.array(poly.exterior.coords)
-        rings.append(exterior)
-        for interior in poly.interiors:
-            hole = np.array(interior.coords)
-            rings.append(hole)
-        return rings
-    """ => py_tmp
-    coord = py2ju(Vector, py_tmp(pypoly, np))
-    return QueryPolygon(pypoly, coord)
-end
+include(joinpath(@__DIR__, "fileio/geojson.jl"))
+include(joinpath(@__DIR__, "fileio/stl.jl"))
 
 include(joinpath(@__DIR__, "utils.jl"))
 include(joinpath(@__DIR__, "polygon.jl"))
