@@ -14,6 +14,7 @@ function pip_query(
     n, m = size(points)
     n == 3 || error("points must be a 3xN array")
     m >= 1 || error("at least 1 points are required")
+    (nsamples > 0 && isodd(nsamples)) || error("nsamples must be a positive odd integer")
     py_points = np.array(points')
 
     # query by using open3d
@@ -28,6 +29,8 @@ function pip_query(
     scene = o3d.t.geometry.RaycastingScene(device=_dev)
     _ = scene.add_triangles(mesh_t)
     pts_t = o3d.core.Tensor(py_points.astype(np.float32), device=_dev)
+
+    println("\e[1;36m[start]:\e[0m querying points inside the STL model")
     occ = scene.compute_occupancy(pts_t, nsamples=nsamples)
     tmp = occ.numpy().astype(pybuiltins.bool)
     
