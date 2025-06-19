@@ -4,6 +4,8 @@
 |  - pip_query                                                                             |
 +==========================================================================================#
 
+include(joinpath(@__DIR__, "discretization/_polyhedron.jl"))
+
 function pip_query(
     stl_model::STLInfo3D, 
     points   ::AbstractMatrix; 
