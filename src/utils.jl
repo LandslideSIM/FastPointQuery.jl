@@ -108,10 +108,10 @@ is called "filling mode."
     h > 0 || error("h must be positive")
     D, N = size(pts_cen)
     (D == 2 || D == 3) || throw(ArgumentError("pts_cen must have 2 or 3 rows (got $D)"))
-    of1 = [-1 -1 -1 -1 1 1 1 1; -1 -1 1 1 -1 -1 1 1; -1 1 -1 1 -1 1 -1 1]
-    of2 = [-1 -1 1 1; -1 1 -1 1]
+    of1 = T[-1 -1 -1 -1 1 1 1 1; -1 -1 1 1 -1 -1 1 1; -1 1 -1 1 -1 1 -1 1]
+    of2 = T[-1 -1 1 1; -1 1 -1 1]
     K = D == 3 ? 8 : 4
-    offsets = D == 3 ? oft .* of1 : oft .* of2
+    offsets = D == 3 ? of1 : of2
     offsets .*= T(h * 0.25)
     # filling mode
     pts = Matrix{T}(undef, D, K*N)
