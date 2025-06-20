@@ -4,25 +4,7 @@
 |  - _get_pts                                                                              |
 +==========================================================================================#
 
-"""
-    _get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
-
-Description:
----
-Get points inside a polygon at a specified grid resolution `h`. The input `polygon` is an
-instance of `QueryPolygon`, and `h` is the grid resolution. If `fill` is set to true, it 
-returns the points in a filled grid pattern; otherwise, it returns the center points of the 
-grid cells.
-
-Example:
----
-```julia
-polygon_xy = [0 0; 1 0; 1 1; 0 1]' # 2xN array
-poly = _get_polygon(polygon_xy, ratio=1) # poly.polygon to visualize
-pts = get_pts(poly, 0.1; fill=true) # returns points in a filled grid pattern
-```
-"""
-function _get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
+function _get_pts(polygon::QueryPolygon, h::Real, fill::Bool, edge::Bool)
     h > 0 || error("h must be positive")
     pypoly = polygon.polygon
     minx, miny, maxx, maxy = pypoly.bounds
@@ -36,7 +18,8 @@ function _get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
         out_shape=(height, width),
         transform=transform,
         fill=0,
-        dtype=np.uint8
+        dtype=np.uint8,
+        all_touched=edge
     )
     rows, cols = np.where(mask == 1)
     xs, ys = rasterio.transform.xy(transform, rows, cols, offset="center")
@@ -53,28 +36,11 @@ function _get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
     end
 end
 
-"""
-    _get_pts(stl_data::STLInfo2D, h::Real; fill::Bool=true)
-
-Description:
----
-Get points inside a 2D STL model at a specified grid resolution `h`. The input `stl_data` is 
-an instance of `STLInfo2D`, which contains the mesh, vertices, and triangles of the STL 
-model. If `fill` is set to true, it returns the points in a filled grid pattern; otherwise, 
-it returns the center points of the grid cells.
-
-Example:
----
-```julia
-stl_data = readSTL2D("path/to/your/file.stl")
-pts = _get_pts(stl_data, 0.1; fill=true) # returns points in a filled grid pattern
-```
-"""
-function _get_pts(stl_data::STLInfo2D, h::Real; fill::Bool=true)
+function _get_pts(stl_data::STLInfo2D, h::Real, fill::Bool, edge::Bool)
     h > 0 || error("h must be positive")
     triangle_coords_2d = stl_data.py_vertices[stl_data.py_triangles]
     tris2d = shapely.polygons(triangle_coords_2d)
     region = shapely.unary_union(tris2d)
     polygon = QueryPolygon(region)
-    return get_pts(polygon, h; fill=fill)
+    return _get_pts(polygon, h, fill, edge)
 end

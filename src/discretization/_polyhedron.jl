@@ -5,7 +5,7 @@
 |  - _get_pts_ray                                                                          |
 +==========================================================================================#
 
-function _get_pts_voxel(stl_model::STLInfo3D, h::Real; fill::Bool=true)
+function _get_pts_voxel(stl_model::STLInfo3D, h::Real, fill::Bool)
     # inputs check
     h > 0 || error("h must be a positive number")
     step = h * 0.25
@@ -30,7 +30,9 @@ function _get_pts_voxel(stl_model::STLInfo3D, h::Real; fill::Bool=true)
     end
 end
 
-function _get_pts_ray(stl_model::STLInfo3D, h::Real; fill::Bool=true, ϵ::String="FP32")
+function _get_pts_ray(stl_model::STLInfo3D, h::Real, fill::Bool, ϵ::String)
+    # inputs check
+    h > 0 || error("h must be a positive number")
     points, pts2 = prepareprojection(stl_model, h, ϵ)
     @info "generating pts at h = $h"
     edges = projectionlist(stl_model, points)
