@@ -5,12 +5,14 @@
 |  - meshbuilder                                                                           |
 |  - filling_pts                                                                           |
 |  - get_normals                                                                           |
+|  - sortpts                                                                               |
 +==========================================================================================#
 
 export get_polygon
 export meshbuilder
 export filling_pts
 export get_normals
+export sortpts
 
 """
     get_polygon(points::AbstractMatrix; ratio::Bool=0.1, allow_holes::Bool=false)
@@ -134,4 +136,23 @@ function get_normals(points::AbstractArray; k::Int=10)
     pcd.orient_normals_to_align_with_direction([0, 0, 1])
     normals = PyArray(np.asarray(pcd.normals).T)
     return normals
+end
+
+"""
+    sortpts(pts::AbstractMatrix; xy::Bool=true)
+
+Description:
+---
+If `xy` is true, sort the points in `pts` by the y-, and then x-coordinates (2/3D). 
+If `xy` is false, sort the points by the z-, y-, and then x-coordinates (3D).
+"""
+function sortpts(pts::AbstractMatrix; xy::Bool=true)
+    if size(pts, 1) == 2 || xy
+        perm = sortperm(axes(pts, 2), by = i -> (pts[2, i], pts[1, i]))
+    elseif size(pts, 1) == 3
+        perm = sortperm(axes(pts, 2), by = i -> (pts[3, i], pts[2, i], pts[1, i]))
+    else
+        throw(ArgumentError("The input points should have 2 or 3 rows (2/3D)"))
+    end
+    return Array(pts[:, perm])
 end
