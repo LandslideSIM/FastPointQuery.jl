@@ -26,10 +26,8 @@ xyz = readtiff("example.tif")
 """
 function readtiff(filename::String; dst_crs::String="EPSG:3857")
     isfile(filename) || throw(ArgumentError("file not found: $filename"))
-    if endswith(filename, ".tif")
-        filename *= "f"  # ensure .tiff extension
-    end
-    endswith(filename, ".tiff") || error("filename must be a .tif file")
+    (endswith(filename, ".tiff") || endswith(filename, ".tif")) || error(
+        "filename must be a .tif or .tiff file")
 
     @pyexec """
     def py_tmp(tif_path, dst_crs, rasterio, np):
