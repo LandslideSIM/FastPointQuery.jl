@@ -3,12 +3,14 @@
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 |  - get_polygon                                                                           |
 |  - meshbuilder                                                                           |
-|  - populate_pts                                                                          |
+|  - filling_pts                                                                           |
+|  - get_normals                                                                           |
 +==========================================================================================#
 
 export get_polygon
 export meshbuilder
-export populate_pts
+export filling_pts
+export get_normals
 
 """
     get_polygon(points::AbstractMatrix; ratio::Bool=0.1, allow_holes::Bool=false)
@@ -94,42 +96,42 @@ function meshbuilder(x::T, y::T, z::T; ϵ::String="FP64") where T <: AbstractRan
 end
 
 """
-    populate_pts(pts_cen::AbstractMatrix{T}, h::Real) where T
+    filling_pts(pts_cen::AbstractMatrix{T}, h::Real) where T
 
 Description:
 ---
-Populate the points around the center points `pts_cen` with the spacing `h/4` (2/3D).
+Populate the points around the center points `pts_cen` with the spacing `h/4` (2/3D), which
+is called "filling mode."
 """
-@views function populate_pts(pts_cen::AbstractMatrix{T}, h::Real) where {T}
+@views function filling_pts(pts_cen::AbstractMatrix{T}, h::Real) where T
+    # inputs checking
     h > 0 || error("h must be positive")
     D, N = size(pts_cen)
-    (D == 2 || D == 3) ||
-        throw(ArgumentError("pts_cen must have 2 or 3 rows (got $D)"))
-    oft = T(h * 0.25)
-
-    if D == 3
-        offsets = oft .* [
-            -1 -1 -1 -1  1  1  1  1;
-            -1 -1  1  1 -1 -1  1  1;
-            -1  1 -1  1 -1  1 -1  1
-        ]
-        K = 8
-    else
-        offsets = oft .* [
-            -1 -1  1  1;
-            -1  1 -1  1
-        ]
-        K = 4
-    end
-
+    (D == 2 || D == 3) || throw(ArgumentError("pts_cen must have 2 or 3 rows (got $D)"))
+    of1 = [-1 -1 -1 -1 1 1 1 1; -1 -1 1 1 -1 -1 1 1; -1 1 -1 1 -1 1 -1 1]
+    of2 = [-1 -1 1 1; -1 1 -1 1]
+    K = D == 3 ? 8 : 4
+    offsets = D == 3 ? oft .* of1 : oft .* of2
+    offsets .*= T(h * 0.25)
+    # filling mode
     pts = Matrix{T}(undef, D, K*N)
     @inbounds for i in 1:N
-        base = (i-1)*K
-        cen  = pts_cen[:, i]        # 取第 i 个中心点 (D×1)
+        base, cen = (i - 1) * K, pts_cen[:, i] 
         @simd for j in 1:K
             pts[:, base+j] .= cen .+ offsets[:, j]
         end
     end
-
     return pts
+end
+
+function get_normals(points::AbstractArray; k::Int=10)
+    size(points, 1) == 3 || error("points must be a 3xN array")
+    pts = np.asarray(points, dtype=np.float64).T
+    o3d.utility.Vector3dVector(pts)
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(pts)
+    pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamKNN(knn=k))
+    pcd.orient_normals_to_align_with_direction([0, 0, 1])
+    normals = PyArray(np.asarray(pcd.normals).T)
+    return normals
 end
