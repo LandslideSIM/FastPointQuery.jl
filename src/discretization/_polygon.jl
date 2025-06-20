@@ -1,13 +1,11 @@
 #==========================================================================================+
 | TABLE OF CONTENTS:                                                                       |
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-|  - get_pts                                                                               |
+|  - _get_pts                                                                              |
 +==========================================================================================#
 
-export get_pts
-
 """
-    get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
+    _get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
 
 Description:
 ---
@@ -20,11 +18,11 @@ Example:
 ---
 ```julia
 polygon_xy = [0 0; 1 0; 1 1; 0 1]' # 2xN array
-poly = get_polygon(polygon_xy, ratio=1) # poly.polygon to visualize
+poly = _get_polygon(polygon_xy, ratio=1) # poly.polygon to visualize
 pts = get_pts(poly, 0.1; fill=true) # returns points in a filled grid pattern
 ```
 """
-function get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
+function _get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
     h > 0 || error("h must be positive")
     pypoly = polygon.polygon
     minx, miny, maxx, maxy = pypoly.bounds
@@ -56,7 +54,7 @@ function get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
 end
 
 """
-    get_pts(stl_data::STLInfo2D, h::Real; fill::Bool=true)
+    _get_pts(stl_data::STLInfo2D, h::Real; fill::Bool=true)
 
 Description:
 ---
@@ -69,10 +67,10 @@ Example:
 ---
 ```julia
 stl_data = readSTL2D("path/to/your/file.stl")
-pts = get_pts(stl_data, 0.1; fill=true) # returns points in a filled grid pattern
+pts = _get_pts(stl_data, 0.1; fill=true) # returns points in a filled grid pattern
 ```
 """
-function get_pts(stl_data::STLInfo2D, h::Real; fill::Bool=true)
+function _get_pts(stl_data::STLInfo2D, h::Real; fill::Bool=true)
     h > 0 || error("h must be positive")
     triangle_coords_2d = stl_data.py_vertices[stl_data.py_triangles]
     tris2d = shapely.polygons(triangle_coords_2d)
