@@ -32,7 +32,7 @@ function get_pts(polygon::QueryPolygon, h::Real; fill::Bool=true)
     height = pyfun.int(np.ceil((maxy - miny) / h))
     transform = rasterio.transform.from_origin(minx, maxy, h, h)
 
-    println("\e[1;36m[start]:\e[0m generating pts at resolution $h")
+    println("\e[1;36m[start]:\e[0m generating pts at h = $h")
     mask = rasterize(
         [(pypoly, 1)],
         out_shape=(height, width),

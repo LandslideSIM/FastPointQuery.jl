@@ -32,10 +32,11 @@ end
 
 function _get_pts_ray(stl_model::STLInfo3D, h::Real; fill::Bool=true, ϵ::String="FP32")
     points, pts2 = prepareprojection(stl_model, h, ϵ)
+    println("\e[1;36m[start]:\e[0m generating pts at h = $h")
     edges = projectionlist(stl_model, points)
     pts_cen = fill_particles(edges, pts2, h)
     if fill
-        return populate_pts(pts_cen, h)
+        return filling_pts(pts_cen, h)
     else
         return pts_cen
     end
