@@ -86,6 +86,7 @@ x = 0:0.1:1
 y = 0:0.1:1
 z = 0:0.1:1
 mesh = meshbuilder(x, y, z) # returns a 3xN array of points
+```
 """
 function meshbuilder(x::AbstractRange, y::AbstractRange, z::AbstractRange)::Array{Float64, 2}
     nx, ny, nz = length(x), length(y), length(z)
