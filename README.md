@@ -1,7 +1,7 @@
 # ***FastPointQuery***
 
 [![CI](https://github.com/LandslideSIM/FastPointQuery.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/LandslideSIM/FastPointQuery.jl/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-v0.1.3-pink)]()
+[![Version](https://img.shields.io/badge/version-v0.1.4-pink)]()
 
 > This is a dependency package for [MaterialPointGenerator.jl](https://github.com/LandslideSIM/MaterialPointGenerator.jl), for easier Python ENV management.
 
