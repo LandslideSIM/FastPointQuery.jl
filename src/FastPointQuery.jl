@@ -1,14 +1,16 @@
 module FastPointQuery
 
-using CondaPkg, Downloads, PythonCall
+using CondaPkg, Downloads, Logging, PrecompileTools, PythonCall
 
 # Python packages
-const np       = PythonCall.pynew()
-const shapely  = PythonCall.pynew()
-const o3d      = PythonCall.pynew()
-const trimesh  = PythonCall.pynew()
-const rasterio = PythonCall.pynew()
-const pyjson   = PythonCall.pynew()
+const np         = PythonCall.pynew()
+const shapely    = PythonCall.pynew()
+const o3d        = PythonCall.pynew()
+const trimesh    = PythonCall.pynew()
+const rasterio   = PythonCall.pynew()
+const pyjson     = PythonCall.pynew()
+const splashsurf = PythonCall.pynew()
+const meshio     = PythonCall.pynew()
 
 # Python subpackages
 const rasterize = PythonCall.pynew()
@@ -23,12 +25,14 @@ const res_dir = joinpath(@__DIR__, "../example")
 function __init__()
     @info "initializing environment..."
     try # import Python modules
-        PythonCall.pycopy!(np      , PythonCall.pyimport("numpy"   ))
-        PythonCall.pycopy!(shapely , PythonCall.pyimport("shapely" ))
-        PythonCall.pycopy!(o3d     , PythonCall.pyimport("open3d"  ))
-        PythonCall.pycopy!(trimesh , PythonCall.pyimport("trimesh" ))
-        PythonCall.pycopy!(rasterio, PythonCall.pyimport("rasterio"))
-        PythonCall.pycopy!(pyjson  , PythonCall.pyimport("json"    ))
+        PythonCall.pycopy!(np        , PythonCall.pyimport("numpy"       ))
+        PythonCall.pycopy!(shapely   , PythonCall.pyimport("shapely"     ))
+        PythonCall.pycopy!(o3d       , PythonCall.pyimport("open3d"      ))
+        PythonCall.pycopy!(trimesh   , PythonCall.pyimport("trimesh"     ))
+        PythonCall.pycopy!(rasterio  , PythonCall.pyimport("rasterio"    ))
+        PythonCall.pycopy!(pyjson    , PythonCall.pyimport("json"        ))
+        PythonCall.pycopy!(splashsurf, PythonCall.pyimport("pysplashsurf"))
+        PythonCall.pycopy!(meshio    , PythonCall.pyimport("meshio"      ))
         # import submodules
         PythonCall.pycopy!(rasterize, pyimport("rasterio.features").rasterize)
     catch e
@@ -62,5 +66,15 @@ function get_resource()
              wheel          = joinpath(res_dir, "wheel.stl"))
     return model
 end
+
+quiet(f) = redirect_stdout(devnull) do
+    redirect_stderr(devnull) do
+        with_logger(NullLogger()) do
+            f()
+        end
+    end
+end
+
+#include(joinpath(@__DIR__, "precompile.jl"))
 
 end

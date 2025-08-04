@@ -9,3 +9,6 @@ using Test
 @test !PythonCall.pyisnull(FastPointQuery.trimesh  )
 @test !PythonCall.pyisnull(FastPointQuery.rasterio )
 @test !PythonCall.pyisnull(FastPointQuery.rasterize)
+@test !PythonCall.pyisnull(FastPointQuery.pyjson   )
+@test !PythonCall.pyisnull(FastPointQuery.splashsurf)
+@test !PythonCall.pyisnull(FastPointQuery.meshio   )
