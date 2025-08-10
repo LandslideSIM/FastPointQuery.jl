@@ -8,10 +8,10 @@
 function _get_pts_voxel(stl_model::STLInfo3D, h::Real, fill::Bool)
     # inputs check
     h > 0 || error("h must be a positive number")
-    step = h * 0.25
-    offsets = np.array([-1  1  1; -1  1 -1; 1  1  1; 1  1 -1
-                        -1 -1  1; -1 -1 -1; 1 -1  1; 1 -1 -1]) * step
-    py_all = pyslice(nothing, nothing, nothing)
+    # step = h * 0.25
+    # offsets = np.array([-1  1  1; -1  1 -1; 1  1  1; 1  1 -1
+    #                     -1 -1  1; -1 -1 -1; 1 -1  1; 1 -1 -1]) * step
+    # py_all = pyslice(nothing, nothing, nothing)
 
     # convert to trimesh
     vertices = stl_model.py_vertices
@@ -23,17 +23,18 @@ function _get_pts_voxel(stl_model::STLInfo3D, h::Real, fill::Bool)
     pts_cen = filled_vox.points
 
     if fill # filling mode
-        expanded = pts_cen[py_all, np.newaxis, py_all] + offsets[np.newaxis, py_all, py_all]
-        return PyArray(expanded.reshape(-1, 3))
+        # expanded = pts_cen[py_all, np.newaxis, py_all] + offsets[np.newaxis, py_all, py_all]
+        # PyArray(expanded.reshape(-1, 3))
+        return filling_pts(PyArray(pts_cen), h)
     else
         return PyArray(pts_cen)
     end
 end
 
-function _get_pts_ray(stl_model::STLInfo3D, h::Real, fill::Bool, ϵ::String)
+function _get_pts_ray(stl_model::STLInfo3D, h::Real, fill::Bool)
     # inputs check
     h > 0 || error("h must be a positive number")
-    points, pts2 = prepareprojection(stl_model, h, ϵ)
+    points, pts2 = prepareprojection(stl_model, h)
     @info "generating pts at h = $h"
     edges = projectionlist(stl_model, points)
     pts_cen = fill_particles(edges, pts2, h)
@@ -44,19 +45,19 @@ function _get_pts_ray(stl_model::STLInfo3D, h::Real, fill::Bool, ϵ::String)
     end
 end
 
-function prepareprojection(stl_model::STLInfo3D, h::Real, ϵ)
-    T = ϵ == "FP32" ? Float32 : Float64
+function prepareprojection(stl_model::STLInfo3D, h::Real)
+    T = Float64
     pts2 = meshbuilder(stl_model.vmin[1]-1.5h : h : stl_model.vmax[1]+1.5h,
-                       stl_model.vmin[2]-1.5h : h : stl_model.vmax[2]+1.5h, ϵ=ϵ)
+                       stl_model.vmin[2]-1.5h : h : stl_model.vmax[2]+1.5h)
     vzlimit = T(stl_model.vmin[3] - 10h)
-    points = vcat(pts2, vzlimit .* ones(T, 1, size(pts2, 2)))
+    points = hcat(pts2, vzlimit .* ones(T, size(pts2, 1)))
     return points, pts2
 end
 
 function projectionlist(stl_model::STLInfo3D, points::AbstractArray{T}) where T
     # inputs check
-    pts = points'; n, m = size(pts)
-    m == 3 || error("points must be a 3xN array")
+    pts = points; n, m = size(pts)
+    m == 3 || error("points must be a Nx3 array")
 
     mesh = stl_model.mesh
     pts = np.asarray(pts, dtype=np.float32)
@@ -88,7 +89,7 @@ function fill_particles(edges::AbstractArray, pts::AbstractMatrix{T}, h::Real) w
     @inbounds for i in eachindex(edges)
         v = edges[i]
         if !isempty(v) && iseven(length(v)) && any(!iszero, v)
-            sort!(v); xi, yi = pts[1, i], pts[2, i]
+            sort!(v); xi, yi = pts[i, 1], pts[i, 2]
             for j in 1:2:(length(v) - 1)
                 for z in v[j]:h:v[j + 1]
                     push!(x_all, xi)
@@ -98,9 +99,9 @@ function fill_particles(edges::AbstractArray, pts::AbstractMatrix{T}, h::Real) w
             end
         end
     end
-    xyz = Matrix{T}(undef, 3, length(x_all))
-    xyz[1, :] .= x_all
-    xyz[2, :] .= y_all
-    xyz[3, :] .= z_all
+    xyz = Matrix{T}(undef, length(x_all), 3)
+    xyz[:, 1] .= x_all
+    xyz[:, 2] .= y_all
+    xyz[:, 3] .= z_all
     return xyz
 end

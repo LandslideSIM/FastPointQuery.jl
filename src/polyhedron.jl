@@ -14,10 +14,10 @@ function pip_query(
 )
     # inputs check for points
     n, m = size(points)
-    n == 3 || error("points must be a 3xN array")
-    m >= 1 || error("at least 1 points are required")
+    m == 3 || error("points must be a Nx3 array")
+    n >= 1 || error("at least 1 points are required")
     (nsamples > 0 && isodd(nsamples)) || error("nsamples must be a positive odd integer")
-    py_points = np.array(points')
+    py_points = np.array(points)
 
     # query by using open3d
     vertices = stl_model.py_vertices

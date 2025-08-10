@@ -4,7 +4,7 @@ using WGLMakie
 stl_path1 = get_resource().dragon_phoenix
 stl_path2 = get_resource().wheel
 
-points = rand(3, 10000)
+points = rand(10000, 3)
 stl_model1 = readSTL3D(stl_path1)
 stl_model2 = readSTL3D(stl_path2)
 
@@ -13,7 +13,7 @@ pip_query(stl_model2, points; nsamples=5)
 
 let
     h = 1
-    pts = FastPointQuery._get_pts_voxel(stl_model1, h)
+    pts = FastPointQuery._get_pts_voxel(stl_model1, h, true)
     fig = Figure()
     ax = LScene(fig[1, 1])
     scatter!(ax, pts, markersize=1)
@@ -22,7 +22,7 @@ end
 
 let
     h = 5
-    pts = FastPointQuery._get_pts_voxel(stl_model2, h; fill=true)
+    pts = FastPointQuery._get_pts_voxel(stl_model2, h, true)
     fig = Figure()
     ax = LScene(fig[1, 1])
     scatter!(ax, pts, markersize=1)

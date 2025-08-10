@@ -49,7 +49,7 @@ function readasc(filename::String)
 
             # 拼成 (N, 3) 的数组
             xyz = np.column_stack([xs, ys, zs])
-            return xyz.T
+            return xyz
     """ => py_tmp
     
     return py2ju(Array, py_tmp(filename, rasterio, np))

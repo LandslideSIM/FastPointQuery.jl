@@ -17,26 +17,26 @@ Saves a point cloud to a PLY file.
 Example:
 ---
 ```julia
-points = rand(3, 1000) # 3D points
+points = rand(1000, 3) # 3D points
 saveply(points, "pointcloud.ply")
 # or
 saveply("pointcloud", points) # add .ply extension automatically
 
-points = rand(2, 1000) # 2D points
+points = rand(1000, 2) # 2D points
 saveply("pointcloud.ply", points)
 ```
 """
 function saveply(points::AbstractArray, filename::String)
     # input check
-    n, m = size(points)
-    n in [2, 3] || throw(ArgumentError("points must be a 2D array with 2 or 3 rows"))
+    m, n = size(points)
+    n in [2, 3] || throw(ArgumentError("points must be a 2D array with 2 or 3 columns"))
     if !endswith(filename, ".ply")
         filename *= ".ply"
     end
     if n == 2
-        pts = vcat(points, zeros(1, m))'
+        pts = hcat(points, zeros(m))
     else
-        pts = points'
+        pts = points
     end
 
     cloud = trimesh.points.PointCloud(pts)
@@ -65,9 +65,9 @@ pc = readply("pointcloud.ply", xy=true) # returns only x and y
 """
 function readply(filename::String; xy::Bool=false)
     isfile(filename) || throw(ArgumentError("file $(filename) does not exist"))
-    pc = py2ju(Array, trimesh.load(filename).vertices.T)
+    pc = py2ju(Array, trimesh.load(filename).vertices)
     if xy
-        return Array(pc[1:2, :])
+        return Array(pc[:, 1:2])
     else
         return pc
     end

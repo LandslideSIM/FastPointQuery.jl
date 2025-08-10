@@ -1,7 +1,7 @@
 using FastPointQuery
 using WGLMakie
 
-points = rand(2, 100)
+points = rand(100, 2)
 saveply(points, joinpath(@__DIR__, "pointcloud.ply"))
 readply(joinpath(@__DIR__, "pointcloud.ply"), xy=true)
 

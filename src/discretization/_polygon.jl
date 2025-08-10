@@ -30,9 +30,9 @@ function _get_pts(polygon::QueryPolygon, h::Real, fill::Bool, edge::Bool)
         ur = pts_cen + np.array([ dx,  dy])
         dl = pts_cen + np.array([-dx, -dy])
         dr = pts_cen + np.array([ dx, -dy])
-        return PythonCall.PyArray(np.vstack([ul, ur, dl, dr]).T, copy=false)
+        return PythonCall.PyArray(np.vstack([ul, ur, dl, dr]), copy=false)
     else
-        return PythonCall.PyArray(pts_cen.T, copy=false)
+        return PythonCall.PyArray(pts_cen, copy=false)
     end
 end
 

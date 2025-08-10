@@ -43,7 +43,7 @@ Write the polygon to a GeoJSON file. The `polygon` is an instance of `QueryPolyg
 Example:
 ---
 ```julia
-polygon_xy = [0 0; 1 0; 1 1; 0 1]' # 2xN array
+polygon_xy = [0 0; 1 0; 1 1; 0 1] # Nx2 array
 poly = get_polygon(polygon_xy, ratio=1) # poly.polygon to visualize
 write_polygon(poly, "/path/to/polygon.geojson")
 # or

@@ -23,7 +23,6 @@ const pyfun = PythonCall.pybuiltins
 const res_dir = joinpath(@__DIR__, "../example")
 
 function __init__()
-    @info "initializing environment..."
     try # import Python modules
         PythonCall.pycopy!(np        , PythonCall.pyimport("numpy"       ))
         PythonCall.pycopy!(shapely   , PythonCall.pyimport("shapely"     ))

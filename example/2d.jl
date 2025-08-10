@@ -1,7 +1,7 @@
 using FastPointQuery
 using WGLMakie
 
-points = rand(2, 100)
+points = rand(100, 2)
 poly = get_polygon(points, ratio=0.1)
 stl_file = joinpath(@__DIR__, "2d_hole.stl")
 stl_model = readSTL2D(stl_file)
@@ -14,9 +14,9 @@ write_polygon(poly, joinpath(@__DIR__, "polygon.geojson"))
 write_polygon(joinpath(@__DIR__, "polygon.geojson"), poly)
 poly2 = read_polygon(joinpath(@__DIR__, "polygon.geojson"))
 
-pts1 = get_pts(poly, 0.1)
-pts2 = get_pts(poly, 0.1; fill=false)
-pts3 = get_pts(stl_model, 0.01, fill=false)
+pts1 = FastPointQuery._get_pts(poly, 0.1, true, true)
+pts2 = FastPointQuery._get_pts(poly, 0.1, false, false)
+pts3 = FastPointQuery._get_pts(stl_model, 0.01, false, true)
 
 let
     fig = Figure()

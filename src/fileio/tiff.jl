@@ -12,7 +12,7 @@ export readtiff
 Description:
 ---
 Reads a GeoTIFF file and returns the pixel coordinates and values as a 3D array
-with shape (3, N), where N is the number of pixels. `dst_crs` specifies the destination 
+with shape (N, 3), where N is the number of pixels. `dst_crs` specifies the destination 
 coordinate reference system (CRS) for the output coordinates. The default CRS is "EPSG:3857" 
 (Web Mercator).
 
@@ -63,7 +63,7 @@ function readtiff(filename::String; dst_crs::String="EPSG:3857")
             xs = np.array(xs)
             ys = np.array(ys)
             xyz = np.column_stack([xs, ys, zs])
-            return xyz.T
+            return xyz
     """ => py_tmp
 
     return py2ju(Array, py_tmp(filename, dst_crs, rasterio, np))
