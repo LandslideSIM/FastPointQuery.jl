@@ -214,20 +214,23 @@ function get_normals(points::AbstractArray; k::Int=10)
 end
 
 """
-    sort_pts(pts::AbstractMatrix; xy::Bool=true)
+    sort_pts(pts::AbstractMatrix)
 
 Description:
 ---
-If `xy` is true, sort the points in `pts` by the y-, and then x-coordinates (2/3D). 
-If `xy` is false, sort the points by the z-, y-, and then x-coordinates (3D).
+Sort the points in `pts` by the y-, and then x-coordinates (2D). 
+Sort the points in `pts` by the y-, and then x-coordinates (3D), where `z = false` (by default is `true`).
+Sort the points in `pts` by the y-, x-, and then z-coordinates (3D).
+
 """
-function sort_pts(pts::AbstractMatrix; xy::Bool=true)
-    if size(pts, 2) == 2 || xy
-        perm = sortperm(axes(pts, 1), by = i -> (pts[i, 2], pts[i, 1]))
-    elseif size(pts, 2) == 3🍻
-        perm = sortperm(axes(pts, 1), by = i -> (pts[i, 2], pts[i, 1], pts[i, 3]))
+function sort_pts(pts::AbstractMatrix; z::Bool=true)
+    dims = size(pts, 2)
+    if (dims == 2) || !z
+        sorted_points = sortslices(pts; dims=1, by = r -> (r[1], r[2]))
+    elseif dims == 3
+        sorted_points = sortslices(pts; dims=1, by = r -> (r[3], r[1], r[2]))
     else
         throw(ArgumentError("The input points should have 2 or 3 rows (2/3D)"))
     end
-    return Array(pts[perm, :])
+    return Array(sorted_points)
 end
