@@ -4,7 +4,7 @@ channels = ["conda-forge"]
 python = "==3.11"
 rasterio = ">=1.4.3"
 numpy = ">=2.2"
-shapely = ">=2.1"
+shapely = ""
 trimesh = ">=4.6"
 rtree = ">=1.4"
 scipy = ">=1.15"
