@@ -3,12 +3,12 @@ channels = ["conda-forge"]
 [deps]
 python = "==3.11"
 rasterio = ">=1.4.3"
-numpy = ">=2.2"
+numpy = ""
 shapely = ""
-trimesh = ">=4.6"
-rtree = ">=1.4"
-scipy = ">=1.15"
-meshio = ">=5.3"
+trimesh = ""
+rtree = ""
+scipy = ""
+meshio = ""
 
 [pip.deps]
 pysplashsurf = "==0.12.0.1"
