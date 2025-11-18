@@ -1,7 +1,7 @@
 channels = ["conda-forge"]
 
 [deps]
-python = "==3.12"
+python = "==3.11"
 rasterio = ">=1.4.3"
 numpy = ">=2.2"
 shapely = ">=2.1"
