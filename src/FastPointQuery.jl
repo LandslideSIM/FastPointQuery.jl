@@ -2,6 +2,8 @@ module FastPointQuery
 
 using CondaPkg, DelimitedFiles, Downloads, Logging, PrecompileTools, PythonCall
 
+export pypkg_versions
+
 # Python packages
 const np         = PythonCall.pynew()
 const shapely    = PythonCall.pynew()
@@ -37,6 +39,18 @@ function __init__()
     catch e
         @error "Failed to initialize Python ENV" exception=e
     end
+end
+
+function pypkg_versions()
+    println("\n=== Python Library Versions ===")
+    println("numpy:        ", np.__version__)
+    println("shapely:      ", shapely.__version__)
+    println("open3d:       ", o3d.__version__)
+    println("trimesh:      ", trimesh.__version__)
+    println("rasterio:     ", rasterio.__version__)
+    println("splashsurf:   ", pyhasattr(splashsurf, "__version__") ? splashsurf.__version__ : "N/A")
+    println("meshio:       ", meshio.__version__)
+    println("================================\n")
 end
 
 include(joinpath(@__DIR__, "fileio/asc.jl"))
