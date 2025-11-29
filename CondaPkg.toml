@@ -1,15 +1,15 @@
 channels = ["conda-forge"]
 
 [deps]
-python = "==3.11"
+python = "==3.10"
+numpy = ">=2.2"
+shapely = ">=2.1"
+trimesh = ">=4.6"
+rtree = ">=1.4"
+scipy = ">=1.15"
+meshio = ">=5.3"
 rasterio = ">=1.4.3"
-numpy = ""
-shapely = ""
-trimesh = ""
-rtree = ""
-scipy = ""
-meshio = ""
 
 [pip.deps]
 pysplashsurf = "==0.12.0.1"
-open3d = ""
+open3d = "==0.19.0"
