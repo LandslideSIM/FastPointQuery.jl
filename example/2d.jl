@@ -1,9 +1,9 @@
 using FastPointQuery
 using WGLMakie
 
-points = rand(100, 2)
-poly = get_polygon(points, ratio=0.1)
-stl_file = joinpath(@__DIR__, "2d_hole.stl")
+points    = rand(100, 2)
+poly      = get_polygon(points, ratio=0.1)
+stl_file  = joinpath(@__DIR__, "2d_hole.stl")
 stl_model = readSTL2D(stl_file)
 
 pip_query(poly, 0, 0.2)
