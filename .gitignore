@@ -32,3 +32,4 @@ Manifest.toml
 *.ply
 *.tiff
 *.asc
+*.obj
