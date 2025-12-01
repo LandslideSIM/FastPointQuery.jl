@@ -1,7 +1,7 @@
 name = "FastPointQuery"
 uuid = "b325ad68-3eea-4afa-b43e-4b8e378fd76d"
 authors = ["Zenan Huo <zenan.huo@outlook.com>"]
-version = "0.5.0"
+version = "0.5.1"
 
 [deps]
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
