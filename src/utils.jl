@@ -45,7 +45,7 @@ function get_polygon(points::AbstractMatrix; ratio::Real=0.1, allow_holes::Bool=
 end
 
 """
-    meshbuilder(x::AbstractRange, y::AbstractRange)
+    meshbuilder(x::AbstractVector{<:Real}, y::AbstractVector{<:Real}, step::Real)
 
 Description:
 ---
@@ -54,13 +54,17 @@ Generate structured mesh in 2D space.
 Example:
 ---
 ```julia
-x = 0:0.1:1
-y = 0:0.1:1
-mesh = meshbuilder(x, y) # returns a 2xN array of points
+x = [0, 1]
+y = [0, 1]
+mesh = meshbuilder(x, y, 0.1) # returns a 2xN array of points
 ``` 
 """
-function meshbuilder(x::AbstractRange, y::AbstractRange)::Array{Float64, 2}
+function meshbuilder(xr::AbstractVector{<:Real}, yr::AbstractVector{<:Real}, step::Real)::Array{Float64, 2}
+    x = range(xr[1], xr[end], step=step)
+    y = range(yr[1], yr[end], step=step)
     nx, ny = length(x), length(y)
+    nx ≤ 1 && error("Mesh must have at least 2 points in x-direction")
+    ny ≤ 1 && error("Mesh must have at least 2 points in y-direction")
     result = Array{Float64, 2}(undef, nx * ny, 2)
     idx = 1
     @inbounds for i = 1:nx
@@ -75,7 +79,7 @@ function meshbuilder(x::AbstractRange, y::AbstractRange)::Array{Float64, 2}
 end
 
 """
-    meshbuilder(x::AbstractRange, y::AbstractRange, z::AbstractRange)
+    meshbuilder(x::AbstractVector{<:Real}, y::AbstractVector{<:Real}, z::AbstractVector{<:Real}, step::Real)
 
 Description:
 ---
@@ -84,14 +88,20 @@ Generate structured mesh in 3D space.
 Example:
 ---
 ```julia
-x = 0:0.1:1
-y = 0:0.1:1
-z = 0:0.1:1
-mesh = meshbuilder(x, y, z) # returns a 3xN array of points
+x = [0, 1]
+y = [0, 1]
+z = [0, 1]
+mesh = meshbuilder(x, y, z, 0.1) # returns a 3xN array of points
 ```
 """
-function meshbuilder(x::AbstractRange, y::AbstractRange, z::AbstractRange)::Array{Float64, 2}
+function meshbuilder(xr::AbstractVector{<:Real}, yr::AbstractVector{<:Real}, zr::AbstractVector{<:Real}, step::Real)::Array{Float64, 2}
+    x = range(xr[1], xr[end], step=step)
+    y = range(yr[1], yr[end], step=step)
+    z = range(zr[1], zr[end], step=step)
     nx, ny, nz = length(x), length(y), length(z)
+    nx ≤ 1 && error("Mesh must have at least 2 points in x-direction")
+    ny ≤ 1 && error("Mesh must have at least 2 points in y-direction")
+    nz ≤ 1 && error("Mesh must have at least 2 points in z-direction")
     result = Array{Float64, 2}(undef, nx * ny * nz, 3)
     idx = 1
     @inbounds for k = 1:nz
@@ -109,20 +119,16 @@ function meshbuilder(x::AbstractRange, y::AbstractRange, z::AbstractRange)::Arra
     return result
 end
 
-function gridbuilder(xr::AbstractRange, yr::AbstractRange)
+function gridbuilder(xr::AbstractVector{<:Real}, yr::AbstractVector{<:Real}, step::Real)
     T2 = Float64
-    x, y = convert.(T2, xr), convert.(T2, yr)
-    nx = length(x); nx ≤ 1 && error("Grid must have at least 2 points in x-direction")
-    ny = length(y); ny ≤ 1 && error("Grid must have at least 2 points in y-direction")
+    x, y, step = convert.(T2, xr), convert.(T2, yr), T2(step)
+    ξ = meshbuilder(x, y, step)
+    nx = ξ[:, 1] |> unique |> length
+    ny = ξ[:, 2] |> unique |> length
     ni = nx * ny; nc = (nx - 1) * (ny - 1)
-    _tmp_diff_vec_ = diff(x); all_equal = all(≈(_tmp_diff_vec_[1]), _tmp_diff_vec_)
-    h1 = all_equal ? _tmp_diff_vec_[1] : error("grid spacing in x direction must be equal")
-    _tmp_diff_vec_ = diff(y); all_equal = all(≈(_tmp_diff_vec_[1]), _tmp_diff_vec_)
-    h2 = all_equal ? _tmp_diff_vec_[1] : error("grid spacing in y direction must be equal")
-    h1 ≈ h2 || error("Grid spacing in x and y directions must be equal")
-    h     = T2(h1)
+    ni == size(ξ, 1) || error("Inconsistent grid points generated")
+    h     = step
     inv_h = T2(1 / h)
-    ξ     = meshbuilder(xr, yr)
     vmin  = minimum(ξ, dims=1)
     vmax  = maximum(ξ, dims=1)
     x1    = T2(vmin[1])
@@ -132,23 +138,17 @@ function gridbuilder(xr::AbstractRange, yr::AbstractRange)
     return (nx=nx, ny=ny, ni=ni, nc=nc, h=h, x1=x1, x2=x2, y1=y1, y2=y2, inv_h=inv_h, ξ=ξ)
 end
 
-function gridbuilder(xr::AbstractRange, yr::AbstractRange, zr::AbstractRange)
+function gridbuilder(xr::AbstractVector{<:Real}, yr::AbstractVector{<:Real}, zr::AbstractVector{<:Real}, step::Real)
     T2 = Float64
-    x, y, z = convert.(Float64, xr), convert.(Float64, yr), convert.(Float64, zr)
-    nx = length(x); nx ≤ 1 && error("Grid must have at least 2 points in x-direction")
-    ny = length(y); ny ≤ 1 && error("Grid must have at least 2 points in y-direction")
-    nz = length(z); nz ≤ 1 && error("Grid must have at least 2 points in z-direction")
+    x, y, z, step = convert.(Float64, xr), convert.(Float64, yr), convert.(Float64, zr), T2(step)
+    ξ = meshbuilder(x, y, z, step)
+    nx = ξ[:, 1] |> unique |> length
+    ny = ξ[:, 2] |> unique |> length
+    nz = ξ[:, 3] |> unique |> length
     ni = nx * ny * nz; nc = (nx - 1) * (ny - 1) * (nz - 1)
-    _tmp_diff_vec_ = diff(x); all_equal = all(≈(_tmp_diff_vec_[1]), _tmp_diff_vec_)
-    h1 = all_equal ? _tmp_diff_vec_[1] : error("grid spacing in x direction must be equal")
-    _tmp_diff_vec_ = diff(y); all_equal = all(≈(_tmp_diff_vec_[1]), _tmp_diff_vec_)
-    h2 = all_equal ? _tmp_diff_vec_[1] : error("grid spacing in y direction must be equal")
-    _tmp_diff_vec_ = diff(z); all_equal = all(≈(_tmp_diff_vec_[1]), _tmp_diff_vec_)
-    h3 = all_equal ? _tmp_diff_vec_[1] : error("grid spacing in z direction must be equal")
-    h1 ≈ h2 ≈ h3 || error("Grid spacing in x, y and z directions must be equal")
-    h     = T2(h1)
+    ni == size(ξ, 1) || error("Inconsistent grid points generated")
+    h     = step
     inv_h = T2(1 / h)
-    ξ     = meshbuilder(xr, yr, zr)
     vmin  = minimum(ξ, dims=1)
     vmax  = maximum(ξ, dims=1)
     x1    = T2(vmin[1])
