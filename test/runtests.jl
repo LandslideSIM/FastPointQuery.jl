@@ -1,5 +1,4 @@
 using FastPointQuery
-using CondaPkg
 using PythonCall
 using Test
 
@@ -14,13 +13,4 @@ using Test
 @test !PythonCall.pyisnull(FastPointQuery.meshio    )
 
 # Print versions of Python libraries
-println("\n=== Python Library Versions ===")
-println("numpy:        ", FastPointQuery.np.__version__)
-println("shapely:      ", FastPointQuery.shapely.__version__)
-println("open3d:       ", FastPointQuery.o3d.__version__)
-println("trimesh:      ", FastPointQuery.trimesh.__version__)
-println("rasterio:     ", FastPointQuery.rasterio.__version__)
-println("splashsurf:   ", pyhasattr(FastPointQuery.splashsurf, "__version__") ? FastPointQuery.splashsurf.__version__ : "N/A")
-println("meshio:       ", FastPointQuery.meshio.__version__)
-println("================================\n")
-
+FastPointQuery.pypkg_versions()
