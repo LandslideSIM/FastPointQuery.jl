@@ -33,3 +33,4 @@ Manifest.toml
 *.tiff
 *.asc
 *.obj
+example/
