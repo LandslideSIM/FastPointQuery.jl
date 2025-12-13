@@ -3,8 +3,6 @@ module FastPointQuery
 using CondaPkg, PythonCall
 using DelimitedFiles, Downloads, PrecompileTools
 
-export pypkg_version
-
 # Python packages
 const py_np         = PythonCall.pynew()
 const py_shapely    = PythonCall.pynew()
@@ -45,8 +43,6 @@ function pypkg_version()
     println("meshio:       ", py_meshio.__version__)
     println("================================\n")
 end
-
-export get_resource, res_dir
 
 function get_resource()
     @info "downloading resources..."
